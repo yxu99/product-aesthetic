@@ -96,3 +96,5 @@ cat("95% Posterior Density Interval for difference in means:",
     quantile(mu_diff_f, 0.025), ", ", quantile(mu_diff_f, 0.975))
 # Significantly different mean: much lower in control condition
 
+
+

@@ -74,11 +74,48 @@ dist_comp(c_wtp, "FC", "FAH", version, "Car: WTP")
 dist_comp(d_wtp, "FC", "FAH", version, "Drill: WTP")
 
 
-
-
-
-
-
+dist_comp2 <- function(vec1, vec2, legend1, legend2, title) {
+    vec1 <- vec1[!is.na(vec1)]
+    vec2 <- vec2[!is.na(vec2)]
+    d1 <- density(vec1)
+    d2 <- density(vec2)
+    x1 <- min(d1$x, d2$x)
+    x2 <- max(d1$x, d2$x)
+    y1 <- min(d1$y, d2$y)
+    y2 <- max(d1$y, d2$y)
+    par(mar=c(5.1, 4.1, 4.1, 8.1), xpd=TRUE)
+    plot(c(x1, x2), c(y1, y2), type = 'n', bty = 'n', 
+        ylab = '', xlab = '',
+        main = title, col.main = '#909090', axes = F)
+    lines(density(vec1))
+    lines(density(vec2), lty = 2, col = 'blue')
+    legend("topright", inset=c(-0,0), legend = c(legend1, legend2), text.col = c('black', 'blue'),
+        col = c('black', 'blue'), lty = c(1, 2), bty = 'n')
+    legend("topleft", inset=c(-0.06, 0), legend = c(round(sd(vec1), 2), round(sd(vec2), 2)), 
+        text.col = c('black', 'blue'), bty = 'n')
+    text(x =x1 - (x2 - x1) * 0.1, y = y1 + (y2 - y1) * 1.001, 'SD', col = '#909090')
+}
+make_X <- function(vec1, vec2, vec3, vec4, vec5, vec6) {
+    X <- cbind(vec1, vec2, vec3, vec4, vec5, vec6)
+    keep <- rowSums(is.na(X)) != ncol(X)
+    X <- X[keep, ]
+    vers <- version[keep]
+    mean_mat <- matrix(colMeans(X, na.rm=T), nrow=nrow(X), ncol=ncol(X), byrow=T)
+    X <- X - mean_mat
+    return(list(X=X, vers=vers))
+}
+made <- make_X(pt_aev, s_aev, wb_aev, c_aev, d_aev, r_aev)
+X <- made$X
+vers <- made$vers
+ac <- c(X[vers == "AC", ])
+afh <- c(X[vers == "AFH", ])
+dist_comp2(ac, afh, "AC", "AFH", "Aesthetic Ratings")
+made <- make_X(pt_fev, s_fev, wb_fev, c_fev, d_fev, r_fev)
+X <- made$X
+vers <- made$vers
+fc <- c(X[vers == "FC", ])
+fah <- c(X[vers == "FAH", ])
+dist_comp2(fc, fah, "FC", "FAH", "Functional Ratings")
 
 
 aes_ind <- version %in% c("AC", "AFH")
